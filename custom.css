@@ -1,0 +1,51 @@
+
+input {
+	padding: 1em;
+	border: 1px solid gray;
+	display: block;
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+table, tr, td {
+	border: 1px solid gray;
+}
+
+button{
+	margin: 0 auto;
+	background: #F6D155;
+	border: 0;
+	padding: 1em;
+	width: 10em;
+}
+
+
+.row {
+	overflow: auto;
+	border-top: 1px solid #e1e1e1;
+	padding-bottom: 2em;
+}
+
+.leftContent {
+	background: #ccc;
+    padding: 1em;
+    float: left;
+    width: 30%;
+}
+
+.rightContent {
+	float: right;
+    width: 64%;
+}
+
+.rightContent p:first-child{
+    font-size: 20px;
+    margin-top: 12px;
+}
+
+.right-arrow:before {
+	content:'>';
+	float: right;
+	margin-top: -3em;
+}
+

@@ -1,0 +1,74 @@
+
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  		<link rel="stylesheet" type="text/css" href="inline.css">
+  		<link rel="stylesheet" type="text/css" href="custom.css">
+
+	</head>
+	<body>
+		<header class="header">
+	    	<h1 class="header__title">Photo App</h1>
+	    	<button id="butRefresh" class="headerButton" aria-label="Refresh"></button>
+	    	<button id="butAdd" class="headerButton" aria-label="Add"></button>
+	  	</header>
+
+		<!-- <h1>Enter your csv</h1> -->
+
+		<main class="main">
+		    <div class="card cardTemplate" id="card1">
+		    	<h2>Add Wedding</h2>
+
+		    	<form>
+		    		<input type="text" name="title" id="form_wedding_title" placeholder="Wedding Title">
+		    		<input type="date" name="date" id="form_wedding_date">
+
+		    		<input type="file" name="file_name" accept="csv" id="csv_file">
+		    		<button id="send">Send It</button>
+		    	</form>
+
+
+
+		    	<!-- <button disabled class="js-push-btn mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+		        	Enable Push Messaging
+		      	</button> -->
+		    </div>
+
+		    <div class="card cardTemplate" id="weddingSummaryCard">
+		    	<h2>List of Weddings</h2>
+		    </div>
+
+		    <div class="card cardTemplate" id="card2" hidden>
+		    	<div class="card">
+			    	<h2 id="wedding_title"></h2>
+			    	<p id="wedding_date"></p>
+			    </div>
+		    	<div id="wedding_schedule"></div>
+		    </div>
+
+		    
+	   	</main>
+
+	   	<!-- <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script> -->
+	   	<script src="https://www.gstatic.com/firebasejs/5.5.9/firebase-app.js"></script>
+	   	<script src="https://www.gstatic.com/firebasejs/5.5.9/firebase-database.js"></script>
+
+		<script>
+			// // Initialize Firebase
+			// var config = {
+			// 	apiKey: "AIzaSyAcRjzg_B-IOGruZmoSpnV8_os2YYO9vjY",
+			// 	authDomain: "photo-schedule-app.firebaseapp.com",
+			// 	databaseURL: "https://photo-schedule-app.firebaseio.com",
+			// 	projectId: "photo-schedule-app",
+			// 	storageBucket: "",
+			// 	messagingSenderId: "870169582210"
+			// };
+			// firebase.initializeApp(config);
+		</script>
+
+  		<script src="app.js" async></script>
+  	</body>
+</html>
