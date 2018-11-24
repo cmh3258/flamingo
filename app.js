@@ -111,45 +111,11 @@
 	  	weddingSummaryCard.append(div);	
 	}
 
-	// function getSchedule(key) {
-	// 	return app.database.ref('/schedules/' + key).once('value').then(function(snapshot) {
-	// 		console.log('snapshot.val(): ', snapshot.val());
-	// 	  	return snapshot.val();
-	// 	});
-	// }
 
- //  	function createWeddingList(e) {
-  	
-	//   	var wSC = document.getElementById('weddingSummaryCard');
-
-	//   	for (var identifier in weddingData) {
-	//   		console.log('identifier: ', identifier);
-	//   		var data = weddingData[identifier];
-	//   		// console.log(data);
-	// 	  	// for (var i = 0; i < Object.keys(weddingData).length; i++) {
-	// 	  		// console.log('i:', i);
-	// 		var div = document.createElement('div');
-	// 		div.setAttribute('id', identifier);
-	// 		div.setAttribute('class', 'card');
-	// 		div.onclick = selectWeddingToView;
-
-	// 		var h3 = document.createElement('h3');
-	// 		h3.innerHTML = data.title;
-	// 		var p = document.createElement('p');
-	// 		p.innerHTML = data.date;
-	// 		var span = document.createElement('span');
-	// 		span.setAttribute('class', 'right-arrow');
-	// 		div.appendChild(h3);
-	// 		div.appendChild(p);
-	// 		div.appendChild(span);
-	// 		wSC.append(div);
-	// 	  	// }
-	// 	}
-	// }
-  // createWeddingList();
-
+  	/**
+  	 * User clicks a wedding to view all the details
+  	 */
   	function selectWeddingToView(e) {
-	  	// console.log('hi:', e.target.parentElement.id);
 
 	  	console.log('this.in', this.id);
 
@@ -216,95 +182,67 @@
 		});	
   	}
 
-  // document.getElementById('weddingSummaryCard').addEventListener("click", doSomething, false);
 
-  // function doSomething(e) {
-  // 	if (e.target !== e.currentTarget) {
+  	/**
+  	 * Save the new wedding
+  	 */
+	document.getElementById('add-wedding').onclick = function() {
+		var file = document.getElementById('csv_file').files[0];
+		console.log('file:', file);
 
-  //       var clickedItem = e.target.id;
-  //       // alert("Hello " + clickedItem);
-  //       console.log('e:', e.target, e.target.nodeName);
-  //   }
-  //   e.stopPropagation();
-  // }
+		var wedding_title = document.getElementById('form_wedding_title').value;
+		var wedding_date = document.getElementById('form_wedding_date').value;
 
-  document.getElementById('send').onclick = function() {
- 	var file = document.getElementById('csv_file').files[0];
- 	console.log('file:', file);
+		var reader  = new FileReader();
 
- 	var wedding_title = document.getElementById('form_wedding_title').value;
- 	var wedding_date = document.getElementById('form_wedding_date').value;
+		reader.onload = function(e) {
+			var content = reader.result; 	
 
- 	var reader  = new FileReader();
+			var rows = content.split('\r\n');
+			console.log(rows[0]);
 
- 	reader.onload = function(e) {
-		var content = reader.result; 	
+			// get the headers - title, description, notes
+			var descriptors = rows[0].split(',');
 
-		var rows = content.split('\r\n');
+			// get all the real data
+			var schedule = rows.slice(1,);
 
-		// for(var i=0; i<=rows.length; i++) {
-		// 	// var columns = rows[i].split(',');
-		// 	console.log('cols:', rows[i], rows[i].length);
-		// }
+			var parentDiv = document.getElementById('wedding_schedule');
 
+			// parse through the data
+			var formattedSchedule = schedule.map((schedule,i) => {
+				console.log('schedule: ', schedule);
 
-		// TODO : save the content to a DB somewhere!
+				var items = CSVtoArray(schedule);
 
-		// TODO: loop through to see if row is empty to get the start place
-		// could have first couple rows that are empty
-		console.log(rows[0]);
+				console.log('items: ', items);
+				console.log(descriptors[0], ' : ', items[0]);
+				console.log(descriptors[1], ' : ', items[1]);
+				console.log(descriptors[2], ' : ', items[2]);
 
-		// get the headers - title, description, notes
-		var descriptors = rows[0].split(',');
+				// IDEA if have more than 3 columns, add the rest into notes ?
 
-		// get all the real data
-		var schedule = rows.slice(1,);
+				return {
+					time: items[0],
+					description: items[1],
+					notes: items[2],
+				}
+			});
+			
+			saveSchedule(wedding_title, wedding_date, formattedSchedule);
+		}
 
-		var parentDiv = document.getElementById('wedding_schedule');
+		reader.readAsText(file);
 
-		// parse through the data
-		var formattedSchedule = schedule.map((schedule,i) => {
-			console.log('schedule: ', schedule);
-
-			var items = CSVtoArray(schedule);
-
-			console.log('items: ', items);
-			console.log(descriptors[0], ' : ', items[0]);
-			console.log(descriptors[1], ' : ', items[1]);
-			console.log(descriptors[2], ' : ', items[2]);
-
-			// parentDiv.appendChild(createEntry(items));
-
-			// IDEA if have more than 3 columns, add the rest into notes ?
-
-			return {
-				time: items[0],
-				description: items[1],
-				notes: items[2],
-			}
-
-			// // set to card2
-			// document.getElementById('card1').setAttribute('hidden', true);
-			// document.getElementById('card2').removeAttribute('hidden');
-
-			// // set elements in card2
-			// document.getElementById('wedding_title').innerHTML = wedding_title;
-			// document.getElementById('wedding_date').innerHTML = wedding_date;
-		});
+		// stop page from loading
+		return false;
+	}
 
 
-
-		saveSchedule(wedding_title, wedding_date, formattedSchedule);
- 	}
-
- 	reader.readAsText(file);
-
- 	// stop page from loading
- 	return false;
-  }
-
-
-  function saveSchedule(title, date, schedule) {
+	/**
+	 * Saves a schedule to the db
+	 */
+  	function saveSchedule(title, date, schedule) {
 		console.log('schedule:2: ', schedule);
 
 		// save wedding
@@ -322,76 +260,51 @@
 
 		// save schedule
 		app.database.ref('schedules/' + title).set(schedule)
-
-  		// firebase.database().ref('users/' + 'user1').set({
-	//     // username: name,
-	//     // email: email,
-	//     // profile_picture : imageUrl
-	//     description: 'I created a new user, son.'
- //  	});
-  }
+  	}
 
 
-  function createEntry(items) {
-  	var div = document.createElement('div');
-  	div.setAttribute('class', 'row');
-
-  	var leftDiv = document.createElement('div');
-  	leftDiv.setAttribute('class', 'leftContent');
-  	leftDiv.innerHTML = items[0];
-
-  	var rightDiv = document.createElement('div');
-  	rightDiv.setAttribute('class', 'rightContent');
-
-  	var p1 = document.createElement('p');
-  	p1.innerHTML = items[1];
-  	var p2 = document.createElement('p');
-  	p2.innerHTML = items[2];
-
-  	rightDiv.appendChild(p1);
-  	rightDiv.appendChild(p2);
-
-  	div.appendChild(leftDiv);
-  	div.appendChild(rightDiv);
-
-  	return div;
-  }
-
+  	/**
+  	 * Format the wedding details data to display to the user
+  	 */
   	function createDetails(parent, schedule) {
 	  	if (schedule) {
 		  	schedule.map(item => {
-		  		parent.appendChild(createEntry2(item));
+		  		parent.appendChild(createEntry(item));
 		  	})
 		  	return parent;
 		}
 	  	return;
   	}
 
-  function createEntry2(item) {
-  	var div = document.createElement('div');
-  	div.setAttribute('class', 'row');
+  	/**
+  	 * Create the HTML elements for the items in the schedule
+  	 */
+	function createEntry(item) {
+		var div = document.createElement('div');
+		div.setAttribute('class', 'row');
 
-  	var leftDiv = document.createElement('div');
-  	leftDiv.setAttribute('class', 'leftContent');
-  	leftDiv.innerHTML = item.time;
+		var leftDiv = document.createElement('div');
+		leftDiv.setAttribute('class', 'leftContent');
+		leftDiv.innerHTML = item.time;
 
-  	var rightDiv = document.createElement('div');
-  	rightDiv.setAttribute('class', 'rightContent');
+		var rightDiv = document.createElement('div');
+		rightDiv.setAttribute('class', 'rightContent');
 
-  	var p1 = document.createElement('p');
-  	p1.innerHTML = item.description;
-  	var p2 = document.createElement('p');
-  	p2.innerHTML = item.notes;
+		var p1 = document.createElement('p');
+		p1.innerHTML = item.description;
+		var p2 = document.createElement('p');
+		p2.innerHTML = item.notes;
 
-  	rightDiv.appendChild(p1);
-  	rightDiv.appendChild(p2);
+		rightDiv.appendChild(p1);
+		rightDiv.appendChild(p2);
 
-  	div.appendChild(leftDiv);
-  	div.appendChild(rightDiv);
+		div.appendChild(leftDiv);
+		div.appendChild(rightDiv);
 
-  	return div;
-  }
+		return div;
+	}
 
+	// helper function to format text
   	// props to https://stackoverflow.com/questions/8493195/how-can-i-parse-a-csv-string-with-javascript-which-contains-comma-in-data
   	// Return array of string values, or NULL if CSV string not well formed.
 	function CSVtoArray(text) {
