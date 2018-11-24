@@ -13,103 +13,7 @@
 	};
 	firebase.initializeApp(config);
 
-	console.log(firebase.app());  // "[DEFAULT]"
-
-	// var database = firebase.database();
-	// console.log('database:', database);
-
-	// firebase.database().ref('users/' + 'user1').set({
-	//     // username: name,
-	//     // email: email,
-	//     // profile_picture : imageUrl
-	//     description: 'I created a new user, son.'
- //  	});
-
-
-
-	// database.ref('users/' + 'users1' + )
-
-
-  var weddingData = {
-  	'fjanegou': {
-  		title: 'Dionne Wedding',
-  		date: 'January 1, 2018',
-  		schedule: [
-  			{
-  				time: '1 pm',
-  				title: 'family, cake, dessert',
-  				notes: 'something'
-  			},
-  			{
-  				time: '2 pm',
-  				title: 'bride and her dance',
-  				notes: 'doing a thing with some things'
-  			},
-  			{
-  				time: '3:15 pm',
-  				title: 'grooms dinner',
-  				notes: 'I cant think'
-  			},
-  			{
-  				time: '4:26 pm',
-  				title: 'family, cake, dessert',
-  				notes: ''
-  			}
-  		]
-  	},
-  	'aerwuof': {
-  		title: 'Jacobson Wedding',
-  		date: 'March 3, 2018',
-  		schedule: null
-  	},
-  	'saef.m': {
-  		title: 'Hume Wedding',
-  		date: 'March 12, 2018',
-  		schedule: null
-  	}
-  }
-
-  // var weddingData = [
-  // 	{
-  // 		title: 'Dionne Wedding',
-  // 		date: 'January 1, 2018',
-  // 		id: 'randomstringhere',
-  // 		schedule: [
-  // 			{
-  // 				time: '1 pm',
-  // 				title: 'family, cake, dessert',
-  // 				notes: 'something'
-  // 			},
-  // 			{
-  // 				time: '2 pm',
-  // 				title: 'bride and her dance',
-  // 				notes: 'doing a thing with some things'
-  // 			},
-  // 			{
-  // 				time: '3:15 pm',
-  // 				title: 'grooms dinner',
-  // 				notes: 'I cant think'
-  // 			},
-  // 			{
-  // 				time: '4:26 pm',
-  // 				title: 'family, cake, dessert',
-  // 				notes: ''
-  // 			}
-  // 		]
-  // 	},
-  // 	{
-  // 		title: 'Jacobson Wedding',
-  // 		date: 'March 3, 2018',
-  // 		schedule: null
-  // 	},
-  // 	{
-  // 		title: 'Hume Wedding',
-  // 		date: 'March 12, 2018',
-  // 		schedule: null
-  // 	}
-  // ];
-
-
+	// App wide variables - STATE
 	var app = {
 		// isLoading: true,
 		// visibleCards: {},
@@ -118,22 +22,36 @@
 		cardTemplate: document.querySelector('.cardTemplate'),
 		container: document.querySelector('.main'),
 		// addDialog: document.querySelector('.dialog-container'),
-		// daysOfWeek: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-		user: 'user1',
+		user: null,
+		userInfo: null,
 		database: firebase.database(),
 		weddings: {},
 	};
 
 
-  	var user1 = app.database.ref('users/' + 'user1');
+	function isUserLoggedIn() {
+		console.log(localStorage.getItem("username"));
+		var username = localStorage.getItem("username");
+		if (localStorage.getItem("username")) {
+			// log in the user and switch pages
+  			logIn(username);
+		}
+		else {
+			// prompt to enter username/phone number
+			document.getElementById('cardLogin').removeAttribute('hidden');
+		}
+	}
+	isUserLoggedIn();
+
+  	// var user1 = app.database.ref('users/' + 'user1');
 
   	/**
   	 * Get the user object so we can retrieve the weddings associated with them
   	 */
-	user1.on('value', function(snapshot) {
-		var weddings = snapshot.val()['weddings'];
-		retreiveWeddingData(weddings);
-	});
+	// user1.on('value', function(snapshot) {
+	// 	var weddings = snapshot.val()['weddings'];
+	// 	retreiveWeddingData(weddings);
+	// });
 
 
 	/**
@@ -190,8 +108,7 @@
 		div.appendChild(p);
 		div.appendChild(span);
 
-	  	weddingSummaryCard.append(div);
-			
+	  	weddingSummaryCard.append(div);	
 	}
 
 	// function getSchedule(key) {
@@ -231,35 +148,73 @@
 	// }
   // createWeddingList();
 
-  function selectWeddingToView(e) {
-  	// console.log('hi:', e.target.parentElement.id);
+  	function selectWeddingToView(e) {
+	  	// console.log('hi:', e.target.parentElement.id);
 
-  	console.log('this.in', this.id);
+	  	console.log('this.in', this.id);
 
-  	var weddingDetails = app.weddings[this.id];
+	  	var weddingDetails = app.weddings[this.id];
 
-  	console.log('weddingDetails: ', weddingDetails);
+	  	console.log('weddingDetails: ', weddingDetails);
 
-  	// will then hide the first page cards
-	document.getElementById('card1').setAttribute('hidden', true);
-	document.getElementById('weddingSummaryCard').setAttribute('hidden', true);
+	  	// will then hide the first page cards
+		document.getElementById('card1').setAttribute('hidden', true);
+		document.getElementById('weddingSummaryCard').setAttribute('hidden', true);
 
-  	// show the detail card with correct detail
-  		// can use card2 - but need dynamic data
-	document.getElementById('card2').removeAttribute('hidden');
-	document.getElementById('wedding_title').innerHTML = weddingDetails['title'];
-	document.getElementById('wedding_date').innerHTML = weddingDetails['date'];
-	
+	  	// show the detail card with correct detail
+	  		// can use card2 - but need dynamic data
+		document.getElementById('card2').removeAttribute('hidden');
+		document.getElementById('wedding_title').innerHTML = weddingDetails['title'];
+		document.getElementById('wedding_date').innerHTML = weddingDetails['date'];
+		
 
-	// create the elements for the wedding schedule
-	var parentDiv = document.getElementById('wedding_schedule');
-	createDetails(parentDiv, weddingDetails['schedule']);
-	// document.getElementById('wedding_schedule').innerHTML = createEntry2(weddingDetails['schedule']);;
+		// create the elements for the wedding schedule
+		var parentDiv = document.getElementById('wedding_schedule');
+		createDetails(parentDiv, weddingDetails['schedule']);
+		// document.getElementById('wedding_schedule').innerHTML = createEntry2(weddingDetails['schedule']);;
+  	}
 
 
+  	/**
+  	 * Handle the log in - sign up the user or load the profile
+  	 */
+  	document.getElementById('loginBtn').onclick = function() {
+  		var input = document.getElementById('login-input').value;
+  		console.log('input:', input, input.length);
+  		logIn(input);
+ 		return false;
+  	}
 
+  	/**
+  	 * Actually log in the user
+  	 */
+  	function logIn(username) {
+  		var weddings = null;
+  		app.database.ref('/users/' + username).once('value').then(function(snapshot) {
+		  	
+		  	// set the user
+		  	app.user = username;
+		  	localStorage.setItem('username', username);
 
-  }
+		  	if (snapshot.val() === null) {
+		  		// add the new user
+		  		app.database.ref('users/' + username).set({
+					weddings: null
+			  	});
+		  	}
+		  	else {
+		  		app.userInfo = snapshot.val();
+		  		console.log('app:', app);
+		  		weddings = app.userInfo['weddings'];
+		  	}
+
+		  	// show card1
+		  	document.getElementById('cardLogin').setAttribute('hidden', true);
+			document.getElementById('card1').removeAttribute('hidden');
+			document.getElementById('weddingSummaryCard').removeAttribute('hidden');
+			retreiveWeddingData(weddings);
+		});	
+  	}
 
   // document.getElementById('weddingSummaryCard').addEventListener("click", doSomething, false);
 
